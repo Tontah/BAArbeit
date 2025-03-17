@@ -4,12 +4,20 @@ import {words} from "./word.js";
 
 document.set_seed(SEED);
 
-function generateMethodName(numWords) {
+function generateMethodName() {
     let ret = [];
-    for(let i= 0; i < numWords; i++) {
+    for(let i= 0; i < 3; i++) {
         ret.push(words[document.new_random_integer(words.length)]);
     }
     return ret;
+}
+
+function uppercase(identArray) {
+    let output = [identArray[0]];
+    for(let i = 1; i < identArray.length; i++) {
+        output.push((identArray[i][0]).toUpperCase() + identArray[i].slice(1, identArray[i].length));
+    }
+    return output;
 }
 
 function generateIdentifier(numWords) {
@@ -23,50 +31,100 @@ function generateIdentifier(numWords) {
 function generateLeadingBlanks(numBlanks) {
     let output = "";
     while (numBlanks!==0){
-        output = output + '&nbsp;';
+        output = output + " ";
         numBlanks--;
     }
     return output;
 }
-
+function generateLeadingBlank(numBlanks) {
+    return " ".repeat(numBlanks);
+}
 function generated_ccNL(numWords) {
-    let numberOfLoops = numWords+1;
-    let outputArr = [];
+    let blankSpaces = "";
     let output = "";
-    while (numberOfLoops !== 0){
-
-            outputArr.push(generateMethodName(numWords).join(""));
-            numberOfLoops--;
-    }
     for (let i = 0; i < numWords+1; i++) {
-        if( i === 0){
-            output = outputArr[i]+ " = (\n";
+        if( i === 0) {
+            output = uppercase(generateMethodName()).join("") + "( ";
+            blankSpaces = output;
         }
         else if( i === (numWords)){
-            output += outputArr[i]+ "){" + generateMethodName(numWords).join("") + " = x*8;}";
+            output += generateLeadingBlanks(blankSpaces.length) + uppercase(generateIdentifier(numWords)).join("")+ ")\n" +
+                generateLeadingBlanks(blankSpaces.length) + "\n" + "{\n" + " \n" +
+                generateLeadingBlanks(blankSpaces.length) + uppercase(generateIdentifier(numWords)).join("") + " = x*8;\n"  + " \n" +"}";
         }
         else {
-               let numSpaces = outputArr[0].length+5;
-                output += generateLeadingBlanks(numSpaces);
-                output += outputArr[i] + ",\n";
+            if("(" === output.charAt(output.length-2)){
+                output += uppercase(generateIdentifier(numWords)).join("") + ",\n";
+            }
+                else {
+                output += generateLeadingBlanks(blankSpaces.length);
+                output += uppercase(generateIdentifier(numWords)).join("") + ",\n";
+            }
         }
     }
     return output;
 }
 function generated_ccIL(numWords) {
-    return generateMethodName(numWords).join("");
+    let output = "";
+    let inMethodIndentation = 0;
+    for (let i = 0; i < numWords+1; i++) {
+        if (i === 0) {
+            output = uppercase(generateMethodName()).join("") + "( ";
+            inMethodIndentation = output.length/2;
+        } else if (i === (numWords)) {
+            output += uppercase(generateIdentifier(numWords)).join("") + "){\n" + " \n" + generateLeadingBlanks(Math.ceil(inMethodIndentation)) +
+                uppercase(generateIdentifier(numWords)).join("") + " = x*8;\n" + " \n" + "}";
+        } else {
+            output += uppercase(generateIdentifier(numWords)).join("") + ", ";
+        }
+    }
+    return output;
 }
 
 function generated_scNL(numWords) {
-    return generateMethodName(numWords).join("_") + " = (";
+    let blankSpaces = "";
+    let output = "";
+    for (let i = 0; i < numWords+1; i++) {
+        if( i === 0) {
+            output = generateMethodName().join("_") + "( ";
+            blankSpaces = output;
+        }
+        else if( i === (numWords)){
+            output += generateLeadingBlanks(blankSpaces.length) + generateIdentifier(numWords).join("_")+ ")\n" +
+                generateLeadingBlanks(blankSpaces.length) + "\n" + "{\n" + " \n" +
+                generateLeadingBlanks(blankSpaces.length) + generateIdentifier(numWords).join("_") + " = x*8;\n"  + " \n" +"}";
+        }
+        else {
+            if("(" === output.charAt(output.length-2)){
+                output += generateIdentifier(numWords).join("_") + ",\n";
+            }
+            else {
+                output += generateLeadingBlanks(blankSpaces.length);
+                output += generateIdentifier(numWords).join("_") + ",\n";
+            }
+        }
+    }
+    return output;
 }
-function generated_scIL(numWords
-) {
-    return generateMethodName(numWords).join("_") + " = (";
+function generated_scIL(numWords) {
+    let output = "";
+    let inMethodIndentation = 0;
+    for (let i = 0; i < numWords+1; i++) {
+        if (i === 0) {
+            output = generateMethodName().join("_") + "( ";
+            inMethodIndentation = output.length/2;
+        } else if (i === (numWords)) {
+            output += generateIdentifier(numWords).join("_") + "){\n" + " \n" + generateLeadingBlanks(Math.ceil(inMethodIndentation)) +
+                generateIdentifier(numWords).join("_") + " = x*8;\n" + " \n" + "}";
+        } else {
+            output += generateIdentifier(numWords).join("_") + ", ";
+        }
+    }
+    return output;
 }
 
 
-// Das hier ist die eigentliche Experimentdefinition
+
 document.experiment_definition(
     {
         experiment_name:"Camel case Vs Underscore",

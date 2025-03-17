@@ -5,11 +5,13 @@
     <title>Software-Science.org - CC Vs SC</title>
 
     <style>
-
-        main {
-            padding: 0px;
-            background: lightblue;
+        #main {
+            width: 100%;
+            background-color: lightblue;
             text-align: center;
+            position: fixed;
+
+
         }
 
         menu {
@@ -24,15 +26,17 @@
 
         }
 
-        main h1 {
+        #main h1{
             margin:0;
+            background-color: lightblue
         }
 
-        main h2 {
+        #main h2{
             font-weight: lighter;
             text-align: center;
             margin:0;
             font-size: 80%;
+            background-color: lightblue
         }
 
         simplecode {
@@ -50,6 +54,7 @@
             position:fixed;
             top:30px;
             right: 10px;
+            margin-top: 10px;
         }
 
         STATE {
@@ -59,7 +64,9 @@
             right: 10px;
         }
 
-        STAGE {}
+        #STAGE {
+            padding-top: 100px;
+        }
 
     </style>
 
@@ -67,14 +74,14 @@
 </head>
 <body>
 
-<main>
+<div id = "main">
     <h1><simplecode>software-science.org</simplecode></h1>
     <h2><simplecode>The place where software experiments live</simplecode></h2>
     <p><STATE id="STATE"></STATE></p>
     <p><TASK id="TASK"></TASK></p>
-</main>
-<MENU>[Impressum]</MENU>
-<STAGE id="STAGE"></STAGE><p></p>
+</div>
+<MENU>[Impressum]</MENU><p></p>
+<div id="STAGE"></div><p></p>
 <script type="module" src="src/lib.js"></script>
 <script type="module" src="src/main.js"></script>
 </body>
