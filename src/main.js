@@ -130,18 +130,21 @@ document.experiment_definition(
         experiment_name:"Camel case Vs Underscore",
         seed:"42",
         introduction_pages:["This is a camelCase vs under_score identifier experiment.\n\n" +
-                            "Please read till the end\n\n" +
+                            "Please read till the end.\n\n" +
                             "This experiment is constructed as follows.\n\n" +
-                            "Press ENTER to go to the training phase of the experiment.\n\n" +
                             "You are expected to count the number of identifiers that appear in the method declaration.\n\n" +
                             "The name of the identifiers and method are not of any importance.\n\n" +
                             "Follow the instructions that come as you proceed.\n\n" +
                             "You are expected to be concentrated.\n\n" +
-                            "Press [Return] to enter the training phase."],
+                            "Press [Return]/[ENTER] to enter the training phase.\n\n" +
+                            "The training phase can be ended at any time by pressing [ESC].\n\n" +
+                            "So you can end the training when you think you have understood what is required.\n\n" +
+                            "Thanks for your participation."],
 
-        pre_run_instruction:"Be prepared - experimentation starts soon.",
+        pre_run_instruction:"Be prepared - experimentatin starts soon.",
 
-        finish_pages:["Thanks for participating. Send me your csv file - Nikita"],
+        finish_pages:["Thanks for participating. Pressing [ENTER] downloads the csv data file.\n\n" +
+                        "Please send this file to nikitatchana@gmail.com"],
         layout:[
             {variable:"Notation", treatments:["nl & cc", "il & cc", "nl & sc", "il & sc"]},
             {variable: "Occurances", treatments: ["2", "4", "6"]}
@@ -164,7 +167,9 @@ document.experiment_definition(
                 t.code = generated_scIL(t.expected_answer);
 
 
-            t.after_task_string = ()=>"The correct answer was: " + t.expected_answer;
+            t.after_task_string = ()=>"The correct answer was: " + t.expected_answer +
+            "\n" + "press [ENTER] to proceed\n" +
+            "OR TAKE A BREAK IF NEEDED BEFORE PRESSING [ENTER] to proceed";
         }
     }
 );
