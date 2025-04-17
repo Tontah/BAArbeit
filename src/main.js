@@ -3,14 +3,17 @@ import {dictionary} from "./dictionary.js";
 import {words} from "./word.js";
 
 document.set_seed(SEED);
+let random = new Math.seedrandom("80");
 
-function generateMethodName() {
-    let ret = [];
-    for(let i= 0; i < 3; i++) {
-        ret.push(words[document.new_random_integer(words.length)]);
-    }
-    return ret;
+
+function to_positive(rand) {
+    let num;
+    do {
+        num = Math.abs(rand.int32() % 5);
+    } while (num === 0 || num === 1);
+    return num;
 }
+
 
 function uppercase(identArray) {
     let output = [identArray[0]];
@@ -28,96 +31,51 @@ function generateIdentifier(numWords) {
     return idenArray;
 }
 
-function generateLeadingBlanks(numBlanks) {
-    let output = "";
-    while (numBlanks!==0){
-        output = output + " ";
-        numBlanks--;
+function generated_ccNL(numWords) {
+    let output;
+    for (let i = 0; i < numWords; i++) {
+        if( i === 0) {
+            output = uppercase(generateIdentifier(to_positive(random))).join("");
+        }
+        else{
+            output += ", " + "\n" + uppercase(generateIdentifier(to_positive(random))).join("");
+        }
     }
     return output;
 }
-function generateLeadingBlank(numBlanks) {
-    return " ".repeat(numBlanks);
-}
-function generated_ccNL(numWords) {
-    let blankSpaces = "";
-    let output = "";
-    for (let i = 0; i < numWords+1; i++) {
-        if( i === 0) {
-            output = uppercase(generateMethodName()).join("") + "( ";
-            blankSpaces = output;
-        }
-        else if( i === (numWords)){
-            output += generateLeadingBlanks(blankSpaces.length) + uppercase(generateIdentifier(numWords)).join("")+ ")\n" +
-                generateLeadingBlanks(blankSpaces.length) + "\n" + "{\n" + " \n" +
-                generateLeadingBlanks(blankSpaces.length) + uppercase(generateIdentifier(numWords)).join("") + " = x*8;\n"  + " \n" +"}";
+function generated_ccWS(numWords) {
+    let output;
+    for (let i = 0; i < numWords; i++) {
+        if (i === 0) {
+            output = uppercase(generateIdentifier(to_positive(random))).join("");
         }
         else {
-            if("(" === output.charAt(output.length-2)){
-                output += uppercase(generateIdentifier(numWords)).join("") + ",\n";
-            }
-                else {
-                output += generateLeadingBlanks(blankSpaces.length);
-                output += uppercase(generateIdentifier(numWords)).join("") + ",\n";
-            }
-        }
-    }
-    return output;
-}
-function generated_ccIL(numWords) {
-    let output = "";
-    let inMethodIndentation = 0;
-    for (let i = 0; i < numWords+1; i++) {
-        if (i === 0) {
-            output = uppercase(generateMethodName()).join("") + "( ";
-            inMethodIndentation = output.length/2;
-        } else if (i === (numWords)) {
-            output += uppercase(generateIdentifier(numWords)).join("") + "){\n" + " \n" + generateLeadingBlanks(Math.ceil(inMethodIndentation)) +
-                uppercase(generateIdentifier(numWords)).join("") + " = x*8;\n" + " \n" + "}";
-        } else {
-            output += uppercase(generateIdentifier(numWords)).join("") + ", ";
+            output += ", " + uppercase(generateIdentifier(to_positive(random))).join("");
         }
     }
     return output;
 }
 
 function generated_scNL(numWords) {
-    let blankSpaces = "";
-    let output = "";
-    for (let i = 0; i < numWords+1; i++) {
+    let output ;
+    for (let i = 0; i < numWords; i++) {
         if( i === 0) {
-            output = generateMethodName().join("_") + "( ";
-            blankSpaces = output;
-        }
-        else if( i === (numWords)){
-            output += generateLeadingBlanks(blankSpaces.length) + generateIdentifier(numWords).join("_")+ ")\n" +
-                generateLeadingBlanks(blankSpaces.length) + "\n" + "{\n" + " \n" +
-                generateLeadingBlanks(blankSpaces.length) + generateIdentifier(numWords).join("_") + " = x*8;\n"  + " \n" +"}";
+            output = generateIdentifier(to_positive(random)).join("_");
         }
         else {
-            if("(" === output.charAt(output.length-2)){
-                output += generateIdentifier(numWords).join("_") + ",\n";
-            }
-            else {
-                output += generateLeadingBlanks(blankSpaces.length);
-                output += generateIdentifier(numWords).join("_") + ",\n";
-            }
+            output += ", " + "\n" + generateIdentifier(to_positive(random)).join("_");
         }
     }
     return output;
 }
-function generated_scIL(numWords) {
-    let output = "";
-    let inMethodIndentation = 0;
-    for (let i = 0; i < numWords+1; i++) {
+function generated_scWS(numWords) {
+    let output;
+    for (let i = 0; i < numWords; i++) {
         if (i === 0) {
-            output = generateMethodName().join("_") + "( ";
-            inMethodIndentation = output.length/2;
-        } else if (i === (numWords)) {
-            output += generateIdentifier(numWords).join("_") + "){\n" + " \n" + generateLeadingBlanks(Math.ceil(inMethodIndentation)) +
-                generateIdentifier(numWords).join("_") + " = x*8;\n" + " \n" + "}";
-        } else {
-            output += generateIdentifier(numWords).join("_") + ", ";
+         output = generateIdentifier(to_positive(random)).join("_");
+        }
+        else {
+            output += ", " + generateIdentifier(to_positive(random)).join("_");
         }
     }
     return output;
@@ -132,8 +90,8 @@ document.experiment_definition(
         introduction_pages:["This is a camelCase vs under_score identifier experiment.\n\n" +
                             "Please read till the end.\n\n" +
                             "This experiment is constructed as follows.\n\n" +
-                            "You are expected to count the number of identifiers that appear in the method declaration.\n\n" +
-                            "The name of the identifiers and method are not of any importance.\n\n" +
+                            "You are expected to count the number of identifiers shown and type the counted number.\n\n" +
+                            "The name of the identifiers are not of any importance.\n\n" +
                             "Follow the instructions that come as you proceed.\n\n" +
                             "You are expected to be concentrated.\n\n" +
                             "Press [Return]/[ENTER] to enter the training phase.\n\n" +
@@ -146,25 +104,22 @@ document.experiment_definition(
         finish_pages:["Thanks for participating. Pressing [ENTER] downloads the csv data file.\n\n" +
                         "Please send this file to nikitatchana@gmail.com"],
         layout:[
-            {variable:"Notation", treatments:["nl & cc", "il & cc", "nl & sc", "il & sc"]},
-            {variable: "Occurances", treatments: ["2", "4", "6"]}
+            {variable:"Notation", treatments:["CC", "SC"]},
+            {variable:"Separator", treatments:["Newline", "Whitespace"]},
+            {variable: "Number of identifiers", treatments: ["2", "3", "4", "5", "6"]},
         ],
-        repetitions:1,                    // Anzahl der Wiederholungen pro Treatmentcombination
-        accepted_responses:["2", "4", "6"], // Tasten, die vom Experiment als Eingabe akzeptiert werden
+        repetitions:5,                    // Anzahl der Wiederholungen pro Treatmentcombination
+        accepted_responses:["2", "3", "4", "5", "6"], // Tasten, die vom Experiment als Eingabe akzeptiert werden
         task_configuration:(t)=>{
 
-            t.expected_answer = parseInt(t.treatment_combination[1].value);
+            t.expected_answer = parseInt(t.treatment_combination[2].value);
 
-            if (t.treatment_combination[0].value === "nl & cc") // fragt, ob die erste Variable (die einzige) den Wert "indented" hat
-                t.code = generated_ccNL(t.expected_answer);
-            else
-            if (t.treatment_combination[0].value === "il & cc") // fragt, ob die erste Variable (die einzige) den Wert "indented" hat
-                t.code = generated_ccIL(t.expected_answer);
-            else
-            if (t.treatment_combination[0].value === "nl & sc") // fragt, ob die erste Variable (die einzige) den Wert "indented" hat
-                t.code = generated_scNL(t.expected_answer);
-            else
-                t.code = generated_scIL(t.expected_answer);
+            if (t.treatment_combination[0].value === "CC"){
+                t.code = t.treatment_combination[1].value === "Newline"? generated_ccNL(t.expected_answer) : generated_ccWS(t.expected_answer);
+            }
+            else{
+                t.code = t.treatment_combination[1].value === "Newline"? generated_scNL(t.expected_answer) : generated_scWS(t.expected_answer);
+            }
 
 
             t.after_task_string = ()=>"The correct answer was: " + t.expected_answer +
@@ -173,6 +128,3 @@ document.experiment_definition(
         }
     }
 );
-function next_random_int_0_to_9() {
-    return document.new_random_integer(10);
-}
