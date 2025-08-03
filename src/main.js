@@ -41,7 +41,6 @@ function generateIdentifier(numWords) {
     return idenArray;
 }
 
-
 function generate_experiment(numOfCorrectIdentifiers, identifierType, separator, notation){
     let wordArr = generateIdentifier(to_positive(random));
     let distracters = shuffle_array(generate_distracter(wordArr, identifierType));
@@ -268,7 +267,6 @@ function generate_distracter(identifierArr, identifierType){
                                     added = true;
                                 }
                                 if (shuffled[i].length === word.length) {
-                                    //distracter = shuffled[i];
                                     //changing any but first letter of word2
                                     if (shuffled[i][0] === word[0] && changed === false) {
                                         distracterArr.push([identifierArr[b - 1], distracter]);
