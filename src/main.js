@@ -6,19 +6,16 @@ import {levDisWord_DicEdit} from "./levDisWord_DicEdit.js";
 let random = new Math.seedrandom("80");
 let wordArr =[];
 let word;
-
-
 document.set_seed(SEED);
 
-
 function to_positive(rand) {
-    let num;
-    do {
-        num = Math.abs(rand.int32() % 3);
-    } while (num === 0 || num === 1);
+    let num = Math.abs(rand.int32() % 5);
+    while (num < 2 || num > 4 ){
+        num = Math.abs(rand.int32() % 5);
+    }
+    console.log(num);
     return num;
 }
-
 
 function uppercase(identArray) {
     let output = [identArray[0]];
@@ -28,102 +25,71 @@ function uppercase(identArray) {
     return output;
 }
 
-
-
 function generateIdentifier(numWords) {
     let idenArray = [];
     const length = levDisWord_DicEdit.length;
+    //wordArr = levDisWord_DicEdit[document.new_random_integer(length)];
+    word = "a";
     for(let i= 0; i < numWords; i++) {
-        do {
+        while (word.length < 4){
             wordArr = levDisWord_DicEdit[document.new_random_integer(length)];
             word = wordArr[0];
-            idenArray.push(word);
-
-        } while (word.length < 4);
-        /*idenArray.push(levDisWord_DicEdit[document.new_random_integer(length)][0]);*/
+        }
+        idenArray.push(word);
+        word = "a";
     }
     return idenArray;
 }
 
-function generated_ccNL(numWords) {
-    let output;
-    for (let i = 0; i < numWords; i++) {
-        if( i === 0) {
-            output = uppercase(generateIdentifier(to_positive(random))).join("");
-        }
-        else{
-            output += ", " + "\n" + uppercase(generateIdentifier(to_positive(random))).join("");
-        }
-    }
-    return output;
-}
-function generated_ccWS(numWords) {
-    let output;
-    for (let i = 0; i < numWords; i++) {
-        if (i === 0) {
-            output = uppercase(generateIdentifier(to_positive(random))).join("");
-        }
-        else {
-            output += ", " + uppercase(generateIdentifier(to_positive(random))).join("");
-        }
-    }
-    return output;
-}
 
-function generated_scNL(numOfCorrectIdentifiers) {
-    let wordArr = generateIdentifier(to_positive(random));//.join("_");
-    let distracters = shuffle_array(generate_distracter(wordArr));
-    let identifier = wordArr.join("_");
-    let output ;
-    let choice ;
-    let counter = 0;
-    let distracterOrIdentifier =["distracter", "identifier"];
-
-    output = identifier + "\n" + "\n";
-    for (let i = 0; i < distracters.length; i++) {
-        if(counter < numOfCorrectIdentifiers) {
-            choice = distracterOrIdentifier[document.new_random_integer(2)];
-        }
-        else {choice = "distracter"}
-        if (choice === "distracter") {
-            if (i === 0){output += "\n" + "\n" + distracters[i].join("_");}
-            else{output += "\n" + distracters[i].join("_");}
-        } else if (choice === "identifier") {
-            if(i === 0){output += "\n" + "\n" + identifier;}
-            else{output += "\n" + identifier;}
-            counter++;
-        }
-    }
-    return output;
-}
-function generated_scWS(numOfCorrectIdentifiers) {
+function generate_experiment(numOfCorrectIdentifiers, identifierType, separator, notation){
     let wordArr = generateIdentifier(to_positive(random));
-    let distracters = shuffle_array(generate_distracter(wordArr));
-    let identifier = wordArr.join("_");
+    let distracters = shuffle_array(generate_distracter(wordArr, identifierType));
+    let identifier;
     let output ;
-    let choice ;
-    let counter = 0;
-    let distracterOrIdentifier =["distracter", "identifier"];
+    const pos = [0,1,2,3,4,5];
+    let correctIdenPosition = [];
 
+    if (notation === "CC") {
+        identifier = uppercase(wordArr).join("");
+    }
+    else{ identifier = wordArr.join("_"); }
     output = identifier + "\n" + "\n";
-    for (let i = 0; i < distracters.length; i++) {
-        if(counter < numOfCorrectIdentifiers) {
-            choice = distracterOrIdentifier[document.new_random_integer(2)];
+
+    if(numOfCorrectIdentifiers === 0){
+        for (let i = 0; i < 6; i++) {
+            output += writeOutput(join_identifier(distracters[i], notation), i, separator);
         }
-        else {choice = "distracter"}
-        if (choice === "distracter") {
-            if (i === 0){output += "\n" + "\n" + distracters[i].join("_");}
-            else{output += ", " + distracters[i].join("_");}
-        } else if (choice === "identifier") {
-            if(i === 0){output += "\n" + "\n" + identifier;}
-            else{output += ", " + identifier;}
-            counter++;
+    }
+    else {
+        correctIdenPosition = shuffle_array(pos).slice(0, numOfCorrectIdentifiers);
+        for (let i = 0; i < 6; i++) {
+            if (correctIdenPosition.includes(i)) {
+                output += writeOutput(identifier, i, separator);
+            } else {
+                output += writeOutput(join_identifier(distracters[i], notation), i, separator);
+            }
         }
     }
     return output;
 }
 
-
+function writeOutput(word, pos, NLorWS){
+    let output ;
+    switch (NLorWS) {
+        case "Newline":
+            if (pos === 0) { output = "\n" + "\n" + word; }
+            else { output = "\n" + word; }
+            break;
+        case "Whitespace":
+            if (pos === 0) { output = "\n" + "\n" + word; }
+            else { output = ", " + word; }
+            break;
+        default:
+            output = "You entered an invalid separator";
+    }
+    return output;
+}
 
 function shuffle_for_distracters(arr) {
     let array = [];
@@ -144,158 +110,199 @@ function shuffle_array(arr) {
     return arr;
 }
 
-function split_identifier(identifier){
-    //identifier.split(/(?=[A-Z])/).map(word => word.toLowerCase());
-    let identifierArr = [];
-    let returnArray = [];
-    if(identifier.includes("_")){
-        returnArray.push("snakecase");
-        identifierArr = identifier.split("_");
-        returnArray.push(identifierArr);
-        return returnArray;
-    }
-    else {
-        returnArray.push("camelcase");
-        identifierArr = identifier.split(/(?=[A-Z])/);
-        for (let i = 0; i < identifierArr.length; i++) {
-            identifierArr[i] = identifierArr[i].toLowerCase();
-        }
-        returnArray.push(identifierArr);
-        return  returnArray;
-    }
-}
-
-
 function join_identifier(identifierArr, style){
     switch (style) {
-        case "camelcase":
-           return uppercase(identifierArr).join("");
-        case "snakecase":
+        case "CC":
+            return uppercase(identifierArr).join("");
+        case "SC":
             return identifierArr.join("_");
         default:
     }
 }
 
-function position_in_array(array, word){
-    let position;
-    for (let i = 0; i < array.length; i++) {
-        if (array[i] === word){
-            position = i;
-            break;
-        }
-    }
-    return position;
-}
-
-
 function getting_the_array_of_word(word){
     let output = []
     for (let i = 0; i < levDisWord_DicEdit.length; i++) {
         if(levDisWord_DicEdit[i][0] === word){
-           output = levDisWord_DicEdit[i];
-           break;
+            output = levDisWord_DicEdit[i];
+            break;
         }
     }
     return output
 }
 
-function generate_distracter(identifierArr){
+
+function change_or_delete_letter(identifierArr){
+    let length = identifierArr.length;
     let distracterArr = [];
     let levDistances =[];
     let shuffled =[];
-    //let additionRandom = to_positive(random)%2;
+    let word;
+    let distracter;
+    let deleted = false;
+    let changed = false;
+    let added = false;
+    for (let b = 0; b < identifierArr.length; b++) {
+        word = identifierArr[b];
+        levDistances = getting_the_array_of_word(word);
+        for (let j = 1; j < levDistances.length; j++) {
+            shuffled = shuffle_for_distracters(levDistances[j]);
+            for (let i = 0; i < shuffled.length; i++) {
+                if (shuffled[i][0] === word[0]) {
+                    distracter = shuffled[i];
+                    //changing any but first letter
+                    if ((shuffled[i].length === word.length && changed === false) || ((shuffled[i].length === word.length-1 || shuffled[i].length === word.length-2) && deleted === false)
+                        || (shuffled[i].length === word.length+1 && added === false)) {
+                        if (length === 3) {
+                            switch (b) {
+                                case 0:
+                                    distracterArr.push([distracter, identifierArr[1], identifierArr[2]]);
+                                    break;
+                                case 1:
+                                    distracterArr.push([identifierArr[0], distracter, identifierArr[2]]);
+                                    break;
+                                case 2:
+                                    distracterArr.push([identifierArr[0], identifierArr[1], distracter]);
+                                    break;
+                                default:
+                                    console.log("Something went wrong");
+                            }
+                            if (word.length === distracter.length){
+                                changed = true;
+                            }
+                            else {deleted = true;}
+                            if (changed === true && deleted === true){
+                                break;
+                            }
+                        } else if (length === 4) {
+                            switch (b) {
+                                case 0:
+                                    distracterArr.push([distracter, identifierArr[1], identifierArr[2], identifierArr[3]]);
+                                    break;
+                                case 1:
+                                    distracterArr.push([identifierArr[0], distracter, identifierArr[2], identifierArr[3]]);
+                                    break;
+                                case 2:
+                                    distracterArr.push([identifierArr[0], identifierArr[1], distracter, identifierArr[3]]);
+                                    break;
+                                case 3:
+                                    distracterArr.push([identifierArr[0], identifierArr[1], identifierArr[2], distracter]);
+                                    break;
+                                default:
+                                    console.log("Something went wrong");
+                            }
+                            if (word.length === distracter.length){
+                                changed = true;
+                            }
+                            else{
+                                deleted = true;
+                            }
+                            if (changed === true && deleted === true){
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (changed === true && deleted === true){
+                deleted = changed = false;
+                break;
+            }
+        }
+    }
+    return distracterArr;
+}
+
+function generate_distracter(identifierArr, identifierType){
+    let distracterArr = [];
+    let levDistances =[];
+    let shuffled =[];
     let word;
     let distracter = "empty";
     let deleted = false;
     let changed = false;
     let added = false;
-    //console.log("additionRandom = " + additionRandom);
 
-    
-    switch(identifierArr.length) {
-        case 2:
-            for (let b = 0; b < identifierArr.length ; b++) {
-                word = identifierArr[b];
-                levDistances = getting_the_array_of_word(word);
-                for (let j = 1; j < levDistances.length; j++) {
-                    shuffled = shuffle_for_distracters(levDistances[j]);
-                    for (let i = 0; i < shuffled.length; i++) {
-                        if (b === 0) {
-                            if (shuffled[i][0] === word[0]) {
+
+    if(identifierType === "different"){
+        for (let i = 0; i < 6; i++) {
+            distracterArr.push(generateIdentifier(to_positive(random)));
+        }
+    }
+    else {
+        switch (identifierArr.length) {
+            case 2:
+                for (let b = 0; b < identifierArr.length; b++) {
+                    word = identifierArr[b];
+                    levDistances = getting_the_array_of_word(word);
+                    for (let j = 1; j < levDistances.length; j++) {
+                        shuffled = shuffle_for_distracters(levDistances[j]);
+                        for (let i = 0; i < shuffled.length; i++) {
+                            if (b === 0) {
+                                if (shuffled[i][0] === word[0]) {
+                                    distracter = shuffled[i];
+                                    //changing any but first letter of word1
+                                    if (shuffled[i].length === word.length && changed === false) {
+                                        distracterArr.push([distracter, identifierArr[b + 1]]);
+                                        changed = true;
+                                    }
+                                    //deleting one letter from word1
+                                    if ((shuffled[i].length === word.length - 1 || shuffled[i].length === word.length - 2) && deleted === false) {
+                                        distracterArr.push([distracter, identifierArr[b + 1]]);
+                                        deleted = true;
+                                    }
+                                    //adding one or more letters to word1
+                                    if (added === false && (shuffled[i].length === word.length + 1 || shuffled[i].length === word.length + 2)) {
+                                        distracterArr.push([distracter, identifierArr[b + 1]]);
+                                        added = true;
+                                    }
+                                    if (deleted === true && changed === true && added === true) {
+                                        break;
+                                    }
+                                }
+                            } else {
                                 distracter = shuffled[i];
-                                //changing any but first letter of word1
-                                if (shuffled[i].length === word.length && changed === false) {
-                                    distracterArr.push([distracter,identifierArr[b+1]]);
-                                    changed = true;
-                                }
-                                //deleting one letter from word1
-                                if ((shuffled[i].length === word.length-1 || shuffled[i].length === word.length-2) && deleted === false) {
-                                    distracterArr.push([distracter,identifierArr[b+1]]);
-                                    deleted = true;
-                                }
-                                //adding one or more letters to word1
-                                if(added === false && (shuffled[i].length === word.length+1 || shuffled[i].length === word.length+2)){
-                                    distracterArr.push([distracter,identifierArr[b+1]]);
+                                //adding one or more letters to word2
+                                if (added === false && (distracter.length === word.length + 1 || distracter.length === word.length + 2)) {
+                                    distracterArr.push([identifierArr[b - 1], distracter]);
                                     added = true;
                                 }
-                                if (deleted === true && changed === true && added === true){
-                                    break;
+                                if (shuffled[i].length === word.length) {
+                                    //distracter = shuffled[i];
+                                    //changing any but first letter of word2
+                                    if (shuffled[i][0] === word[0] && changed === false) {
+                                        distracterArr.push([identifierArr[b - 1], distracter]);
+                                        changed = true;
+                                    }
+                                    //changing first letter of word2
+                                    if (shuffled[i][0] !== word[0] && deleted === false) {
+                                        distracterArr.push([identifierArr[b - 1], distracter]);
+                                        deleted = true;
+                                    }
+                                    if (deleted === true && changed === true && added === true) {
+                                        break;
+                                    }
                                 }
                             }
                         }
-                        else{
-                            distracter = shuffled[i];
-                            //adding one or more letters to word2
-                            if(added === false && (distracter.length === word.length+1 || distracter.length === word.length+2)){
-                                distracterArr.push([identifierArr[b-1], distracter]);
-                                added = true;
-                            }
-                            if (shuffled[i].length === word.length) {
-                                //distracter = shuffled[i];
-                                //changing any but first letter of word2
-                                if (shuffled[i][0] === word[0] && changed === false) {
-                                    distracterArr.push([identifierArr[b-1], distracter]);
-                                    changed = true;
-                                }
-                                //changing first letter of word2
-                                if (shuffled[i][0] !== word[0] && deleted === false) {
-                                    distracterArr.push([identifierArr[b-1], distracter]);
-                                    deleted = true;
-                                }
-                                if (deleted === true && changed === true && added === true){
-                                    break;
-                                }
-                            }
+                        if (deleted === true && changed === true && added === true) {
+                            added = deleted = changed = false;
+                            break;
                         }
-                    }
-                    if (deleted === true && changed === true && added === true){
-                        added = deleted = changed = false;
-                        break;
                     }
                 }
-            }
-
-
-            break;
-        case 3:
-            // code block
-            distracterArr = [["go","for",  "it"],["get", "out", "friend"]]
-            break;
-        case 4:
-            // code block
-            distracterArr = [["code","block", "no", "disturb"], ["abeg", "yah", "tire", "sep"]]
-            break;
-        default:
-        // code block
+                break;
+            case 3:
+               distracterArr = change_or_delete_letter(identifierArr);
+                break;
+            case 4:
+                distracterArr = change_or_delete_letter(identifierArr);
+                break;
+            default:
+                distracterArr = [["Number", "of", "words", ">", "four"]];
+        }
     }
     return distracterArr;
-}
-
-function generate_ccILSame(numWords){
-    let output;
-    let identifierLength = to_positive(random);
-    output = uppercase(generateIdentifier(identifierLength)).join("") +"\n\n\n\n";
-    return output;
 }
 
 
@@ -316,33 +323,28 @@ document.experiment_definition(
                             "So you can end the training when you think you have understood what is required.\n\n" +
                             "Thanks for your participation."],
 
-        pre_run_instruction:"Be prepared - experimentatin starts soon.",
+        pre_run_instruction:"Be prepared - experimentation starts soon.",
 
         finish_pages:["Thanks for participating. Pressing [ENTER] downloads the csv data file.\n\n" +
                         "Please send this file to nikitatchana@gmail.com"],
         layout:[
             {variable:"Notation", treatments:["CC", "SC"]},
             {variable:"Separator", treatments:["Newline", "Whitespace"]},
-            {variable: "identifiers", treatments: ["0", "1", "2" , "3", "4", "5", "6"]},//tells how many identifiers have to be in the list, the rest are thn distracters
+            {variable: "NumOfCorrectIdents", treatments: ["0", "1", "2" , "3", "4", "5", "6"]},//tells how many identifiers have to be in the list, the rest are thn distracters
             {variable: "IdentifierType", treatments: ["same", "different"]},
         ],
-        repetitions:2,                    // Anzahl der Wiederholungen pro Treatmentcombination
+        repetitions:5,                    // Anzahl der Wiederholungen pro Treatmentcombination
         accepted_responses:["0","1", "2", "3", "4", "5", "6"], // Tasten, die vom Experiment als Eingabe akzeptiert werden
         task_configuration:(t)=>{
 
             t.expected_answer = parseInt(t.treatment_combination[2].value);
-
-            if (t.treatment_combination[3].value === "same") {
-                if (t.treatment_combination[0].value === "CC") {
-                    t.code = t.treatment_combination[1].value === "Newline" ? generated_ccNL(t.expected_answer) : generated_ccWS(t.expected_answer);
-                }
-            }
-            else{
-                t.code = t.treatment_combination[1].value === "Newline"? generated_scNL(t.expected_answer) : generated_scWS(t.expected_answer);
-            }
-
+            t.identifier_type = t.treatment_combination[3].value;
+            t.notation = t.treatment_combination[0].value;
+            t.seperator = t.treatment_combination[1].value;
+            t.code = generate_experiment(t.expected_answer, t.identifier_type, t.seperator, t.notation);
 
             t.after_task_string = ()=>"The correct answer was: " + t.expected_answer +
+            "\n" + "You entered: " + t.given_answer +
             "\n" + "press [ENTER] to proceed\n" +
             "OR TAKE A BREAK IF NEEDED BEFORE PRESSING [ENTER] to proceed";
         }
