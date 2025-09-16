@@ -3,16 +3,20 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Bachelor Thesis",
-  "main": "main.js",
+  "main": "secondExperiment.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "Tchana Nikita",
   "license": "ISC",
   "devDependencies": {
-    "vite": "^6.2.5"
+    "vite": "7.1.5"
+  },
+  "dependencies": {
+    "prettier": "^3.2.5"
   }
 }
