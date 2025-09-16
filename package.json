@@ -1,0 +1,18 @@
+{
+  "name": "baarbeit",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Bachelor Thesis",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "Tchana Nikita",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^6.2.5"
+  }
+}

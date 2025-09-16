@@ -1,23 +1,10 @@
-let SEED = "42"
-import {dictionary} from "./dictionary.js";
-import {words} from "./word.js";
+let SEED = "42";
 import {levDisWord_DicEdit} from "./levDisWord_DicEdit.js";
 
 let random = new Math.seedrandom("80");
 let wordArr =[];
 let word;
-let modif = "";
 document.set_seed(SEED);
-
-function to_positive(rand) {
-    let num = Math.abs(rand.int32() % 5);
-    while (num < 2 || num > 4 ){
-        num = Math.abs(rand.int32() % 5);
-    }
-    return num;
-}
-
-
 
 function uppercase(identArray) {
     let output;
@@ -31,35 +18,18 @@ function uppercase(identArray) {
 function generateIdentifier(numWords) {
     let idenArray = [];
     const length = levDisWord_DicEdit.length;
-    word = "a";
+    word = "";
     for(let i= 0; i < numWords; i++) {
         while (word.length < 4){
             wordArr = levDisWord_DicEdit[document.new_random_integer(length)];
             word = wordArr[0];
         }
         idenArray.push(word);
-        word = "a";
+        word = "";
     }
     return idenArray;
 }
-function identType(type, distracters, notation, i, separator){
-    let output = "";
-    switch (type) {
-        case "same":
-            output += writeOutput(join_identifier(distracters[i], notation), i, separator);
-            modif = distracters[i].positionOfChange;
-            break;
-        case "different":
-            output += writeOutput(join_identifier(distracters[i], notation), i, separator);
-            modif = 0;
-            break;
-        default:
-            output = "You entered the wrong identifierType";
-    }
-    return {
-        output
-    };
-}
+
 
 function generate_experiment(numOfCorrectIdentifiers, modificationPosition, separator, notation){
     let wordArr = generateIdentifier(3);
@@ -115,6 +85,8 @@ function shuffle_for_distracters(arr) {
     }
     return array;
 }
+
+
 function shuffle_array(arr) {
     for (let i = arr.length-1; i > 0; i--) {
         const j = Math.abs(random.int32() % (i));
@@ -122,6 +94,7 @@ function shuffle_array(arr) {
     }
     return arr;
 }
+
 
 function join_identifier(identifierArr, style) {
     switch (style) {
@@ -132,6 +105,7 @@ function join_identifier(identifierArr, style) {
         default:
     }
 }
+
 
 function getting_the_array_of_word(word){
     let output = []
@@ -150,7 +124,7 @@ function generate_distracter(identifierArr, modificationPosition){
     let levDistances =[];
     let shuffled =[];
     let word;
-    let distracter = "empty";
+    let distracter = "";
     let added = 0;
 
 
@@ -219,34 +193,7 @@ function composing_distracter_array(identifierArr, distracter, modificationPosit
     return result;
 }
 
-function completing_distracters(distracterArr, identifierArr){
-    let output = [];
-    let levDistances =[];
-    let word;
-    let distracter = "empty";
-    let arrayUsed = [];
-    let  len = 6-distracterArr.length;
 
-    for (let b = 0; b < len; b++) {
-        if(output.length === len ){
-            break
-        }
-        else {
-            if (b >= identifierArr.length) {
-                b = 0;
-            }
-            word = identifierArr[b];
-            levDistances = getting_the_array_of_word(word);
-            distracter = shuffle_for_distracters(shuffle_for_distracters(levDistances[3]))[0];
-            for (let i = 0; i < identifierArr.length; i++) {
-                arrayUsed[i] = identifierArr[i];
-            }
-            arrayUsed[b] = distracter
-            output.push(arrayUsed);
-        }
-    }
-    return output;
-}
 
 document.experiment_definition(
     {
@@ -271,7 +218,7 @@ document.experiment_definition(
         layout:[
             {variable:"Notation", treatments:["CC", "SC"]},
             {variable:"Separator", treatments:["Newline", "Whitespace"]},
-            {variable: "NumOfCorrectIdents", treatments: ["0", "1", "2" , "3", "4"]},//tells how many identifiers have to be in the list, the rest are thn distracters
+            {variable: "NumOfCorrectIdents", treatments: ["0", "1", "2" , "3", "4"]},//tells how many correct identifiers have to be in the list, the rest are the distracters
             {variable: "ModificationPosition", treatments: ["0", "1", "2", "3"]},
         ],
         repetitions:5,                    // Anzahl der Wiederholungen pro Treatmentcombination
@@ -280,7 +227,6 @@ document.experiment_definition(
 
 
             t.expected_answer = parseInt(t.treatment_combination[2].value);
-            //t.identifier_type = t.treatment_combination[3].value;
             t.notation = t.treatment_combination[0].value;
             t.seperator = t.treatment_combination[1].value;
             t.modificationPosition = parseInt(t.treatment_combination[3].value);
