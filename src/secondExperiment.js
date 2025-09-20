@@ -202,13 +202,18 @@ document.experiment_definition(
         introduction_pages:["This is a camelCase vs under_score identifier experiment.\n\n" +
         "Please read till the end.\n\n" +
         "This experiment is constructed as follows.\n\n" +
-        "You are expected to count the number of identifiers shown and type the counted number.\n\n" +
+        "You will be shown a page with an identifier on the \n\n" +
+        "top left corner and a list of identifiers underneath.\n\n" +
+        "You are expected to count the number of identifiers that match the identifier shown top left,\n\n" +
+        " and type in the number you counted from zero to five\n\n" +
         "The name of the identifiers are not of any importance.\n\n" +
         "Follow the instructions that come as you proceed.\n\n" +
         "You are expected to be concentrated.\n\n" +
         "Press [Return]/[ENTER] to enter the training phase.\n\n" +
         "The training phase can be ended at any time by pressing [ESC].\n\n" +
         "So you can end the training when you think you have understood what is required.\n\n" +
+        "As you press enter, place your fingers on the 0, 4, 5, 6 keys on the num pad.\n\n" +
+        "you can then use the 0, 1, 2, 3, 4 keys to type in the correct answer.\n\n" +
         "Thanks for your participation."],
 
         pre_run_instruction:"Be prepared - experimentation starts soon.",
